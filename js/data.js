@@ -20,7 +20,7 @@ const DEFAULT_SITE_BACKGROUND = {
 };
 
 // Mật khẩu Admin mặc định
-const DEFAULT_ADMIN_PASSWORD = "Viet09";
+const DEFAULT_ADMIN_PASSWORD = "Viet82";
 
 // Cấu hình Google Firebase Realtime Database mặc định
 // (Nếu điền cấu hình vào đây, khi tải lên GitHub Pages mọi học sinh mở web sẽ tự động kết nối đám mây)
