@@ -90,6 +90,12 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/><path d="M12 22.5V2.69"/></svg>
         </button>
 
+        <!-- Cloud Sync Status Pill -->
+        <div id="cloudSyncStatusBadge" class="cloud-status-badge offline" title="Trạng thái kết nối Đám Mây Trực Tuyến (Google Firebase)">
+          <span class="cloud-status-dot"></span>
+          <span id="cloudSyncStatusText">Đám Mây: Ngoại Tuyến</span>
+        </div>
+
         <!-- Admin Control Dropdown / Button -->
         <div class="admin-wrapper" id="adminWrapper">
           <!-- Button when NOT logged in as Admin -->
@@ -106,6 +112,10 @@
             
             <button id="openPermissionsModalBtn" class="btn btn-secondary btn-sm" title="Cài đặt phân quyền các nút người khác được nhấn">
               ⚙️ Phân Quyền Khách
+            </button>
+
+            <button id="openCloudConfigBtn" class="btn btn-secondary btn-sm" title="Cài đặt kết nối Đám Mây Trực Tuyến Google Firebase" style="color: var(--accent-cyan); border-color: rgba(6,182,212,0.4);">
+              ☁️ Đồng Bộ Đám Mây
             </button>
 
             <button id="openAddWorkAdminBtn" class="btn btn-primary btn-sm" title="Thêm tác phẩm mới vào kho">
@@ -754,12 +764,21 @@
         </div>
 
         <div class="form-group">
-          <label for="editWorkAudioUpload">🎵 Tải Lên File Âm Thanh Bình Giảng Riêng (.mp3, .wav, .m4a)</label>
-          <input type="file" id="editWorkAudioUpload" accept="audio/*">
-          <div id="editWorkAudioStatus" style="font-size: 0.8rem; color: var(--accent-cyan); margin-top: 5px; display: none;">
-            <span>Đang gắn file âm thanh: <strong id="editWorkAudioName"></strong></span>
-            <button type="button" id="clearEditWorkAudioBtn" style="background: none; border: none; color: var(--accent-rose); cursor: pointer; margin-left: 8px; font-weight: 700;">✕ Xóa file</button>
+          <label for="editWorkAudioUpload">🎵 File Âm Thanh Bài Giảng Bình Luận</label>
+          <div style="margin-bottom: 8px;">
+            <input type="url" id="editWorkAudioUrlInput" placeholder="Dán liên kết âm thanh trực tuyến (https://.../audio.mp3) — Học sinh nghe được online ngay" style="font-size: 0.85rem;">
           </div>
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <label for="editWorkAudioUpload" class="btn btn-secondary btn-sm" style="cursor: pointer;">
+              📁 Hoặc chọn file âm thanh từ máy (.mp3, .wav, .m4a)
+            </label>
+            <input type="file" id="editWorkAudioUpload" accept="audio/*" style="display: none;">
+            <div id="editWorkAudioStatus" style="font-size: 0.8rem; color: var(--accent-cyan); display: none;">
+              <span>Đang gắn: <strong id="editWorkAudioName"></strong></span>
+              <button type="button" id="clearEditWorkAudioBtn" style="background: none; border: none; color: var(--accent-rose); cursor: pointer; margin-left: 8px; font-weight: 700;">✕ Xóa</button>
+            </div>
+          </div>
+          <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">* Mẹo: Dán link URL âm thanh trực tiếp (Google Drive/Dropbox/Catbox) giúp đồng bộ đám mây và mọi học sinh nghe được 100%.</small>
         </div>
 
         <div class="modal-footer">
@@ -894,6 +913,73 @@
     </div>
   </div>
 
+  <!-- Firebase Cloud Sync Configuration Modal (Cài Đặt Đám Mây Google Firebase) -->
+  <div class="modal-overlay" id="firebaseConfigModal">
+    <div class="modal-card" style="max-width: 620px;">
+      <div class="modal-header">
+        <h3>☁️ Cài Đặt Đám Mây Trực Tuyến (Google Firebase)</h3>
+        <button class="close-modal-btn" id="closeFirebaseConfigModalBtn">&times;</button>
+      </div>
+      <div class="modal-form">
+        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
+          Khi kết nối với <strong>Google Firebase Realtime Database (Hoàn toàn miễn phí)</strong>, mọi nội dung, bài học, bìa sách và âm thanh bạn chỉnh sửa sẽ <strong>tự động đồng bộ thời gian thực</strong> sang máy tính và điện thoại của tất cả học sinh!
+        </p>
+
+        <!-- Current Status Box -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: var(--radius-sm); margin-bottom: 14px;">
+          <div>
+            <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">Trạng thái kết nối hiện tại:</span>
+            <strong id="cloudModalStatusText" style="font-size: 0.92rem; color: var(--text-secondary);">Chưa kết nối đám mây (Dùng bộ nhớ cục bộ)</strong>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" id="testCloudSyncBtn">
+            🔄 Đồng bộ ngay
+          </button>
+        </div>
+
+        <!-- 3-Step Guide Card -->
+        <div class="cloud-config-guide-card">
+          <div class="cloud-config-step">
+            <span class="cloud-step-num">1</span>
+            <div>
+              <strong>Tạo dự án Firebase miễn phí</strong>:
+              Truy cập <a href="https://console.firebase.google.com/" target="_blank" rel="noopener" style="color: var(--accent-cyan); text-decoration: underline;">console.firebase.google.com</a> (đăng nhập bằng tài khoản Google của bạn) và bấm <em>Add project</em>.
+            </div>
+          </div>
+          <div class="cloud-config-step">
+            <span class="cloud-step-num">2</span>
+            <div>
+              <strong>Bật Realtime Database</strong>:
+              Vào menu bên trái chọn <em>Build -> Realtime Database -> Create Database</em>, chọn vị trí (Singapore/US) và chọn tab Rules đặt <code>".read": true, ".write": true</code> (Test mode).
+            </div>
+          </div>
+          <div class="cloud-config-step" style="margin-bottom: 0;">
+            <span class="cloud-step-num">3</span>
+            <div>
+              <strong>Lấy cấu hình Web App</strong>:
+              Bấm biểu tượng bánh răng ⚙️ <em>Project Settings -> General -> Your apps</em>, bấm biểu tượng web <code>&lt;/&gt;</code>, copy toàn bộ đoạn mã <code>firebaseConfig = { ... }</code> rồi dán vào ô bên dưới:
+            </div>
+          </div>
+        </div>
+
+        <!-- Config Textarea -->
+        <div class="form-group">
+          <label for="firebaseConfigInput">Dán đoạn mã cấu hình Firebase (JSON hoặc Object)</label>
+          <textarea id="firebaseConfigInput" rows="5" placeholder='const firebaseConfig = {&#10;  apiKey: "AIzaSy...",&#10;  authDomain: "...",&#10;  databaseURL: "https://...-default-rtdb.firebaseio.com",&#10;  projectId: "..."&#10;};' style="font-family: monospace; font-size: 0.8rem;"></textarea>
+        </div>
+
+        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px;">
+          <button type="button" class="btn btn-ghost btn-sm" id="disconnectCloudBtn" style="color: var(--accent-rose);">
+            ✕ Ngắt kết nối
+          </button>
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn btn-secondary" id="cancelFirebaseConfigBtn">Đóng</button>
+            <button type="button" class="btn btn-primary" id="saveFirebaseConfigBtn">🚀 Lưu & Bật Đám Mây</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Floating Toast Notification -->
   <div class="toast-container" id="toastContainer"></div>
 
@@ -928,6 +1014,10 @@
       </div>
     </div>
   </footer>
+
+  <!-- Google Firebase SDKs (Compat CDN v9.23.0) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <!-- Scripts -->
   <script src="js/data.js"></script>

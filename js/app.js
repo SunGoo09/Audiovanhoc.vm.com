@@ -34,7 +34,15 @@ let state = {
   // Admin & Access Control State
   isAdmin: false,
   adminPassword: "Viet09",
-  guestPermissions: { ...DEFAULT_GUEST_PERMISSIONS }
+  guestPermissions: { ...DEFAULT_GUEST_PERMISSIONS },
+
+  // Firebase Cloud Sync State (Đồng bộ đám mây trực tuyến)
+  cloudSync: {
+    enabled: false,
+    connected: false,
+    db: null,
+    listenersAttached: false
+  }
 };
 
 const WALLPAPER_PRESETS = [
@@ -70,6 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initAdminState();
   initAudioSystem();
   initEvents();
+  initFirebaseCloudSync();
+  initCloudEvents();
   renderFeaturedWork();
   renderRandomQuote();
   renderWorks();
@@ -185,6 +195,9 @@ function saveWorks() {
   } catch (e) {
     console.warn("Storage quota exceeded or error saving works:", e);
   }
+  if (state.isAdmin && state.cloudSync && state.cloudSync.enabled) {
+    syncDataToCloud(false);
+  }
 }
 
 function saveNotes() {
@@ -193,6 +206,9 @@ function saveNotes() {
 
 function savePermissions() {
   localStorage.setItem('vanhoc12_guest_perms', JSON.stringify(state.guestPermissions));
+  if (state.isAdmin && state.cloudSync && state.cloudSync.enabled) {
+    syncDataToCloud(false);
+  }
 }
 
 function initTheme() {
@@ -410,6 +426,10 @@ function initBackgroundSystem() {
     localStorage.removeItem('vanhoc12_user_has_custom_bg');
     state.hasUserCustomizedBg = false;
 
+    if (state.cloudSync && state.cloudSync.enabled) {
+      syncDataToCloud(true);
+    }
+
     showToast('⭐ Đã đặt làm Hình Nền Mặc Định! Tất cả học sinh & người mới vào web sẽ tự động thấy nền này.', 'success');
   });
 
@@ -436,6 +456,7 @@ function initBackgroundSystem() {
 }
 
 function exportUpdatedDataJs() {
+  const currentFbCfg = getStoredFirebaseConfig();
   const content = `/**
  * VănHọc12 — Kho Dữ Liệu Tác Phẩm Ngữ Văn Lớp 12 & Luyện Thi THPT Quốc Gia
  * Tự động đồng bộ cấu hình Admin, bìa sách và hình nền mặc định toàn web
@@ -452,6 +473,10 @@ const DEFAULT_SITE_BACKGROUND = {
 
 // Mật khẩu Admin mặc định
 const DEFAULT_ADMIN_PASSWORD = ${JSON.stringify(state.adminPassword || 'Viet09')};
+
+// Cấu hình Google Firebase Realtime Database mặc định
+// (Nếu đã cấu hình, khi tải lên GitHub Pages mọi học sinh mở web sẽ tự động kết nối đám mây)
+const DEFAULT_FIREBASE_CONFIG = ${JSON.stringify(currentFbCfg, null, 2)};
 
 const LITERATURE_WORKS = ${JSON.stringify(state.works, null, 2)};
 
@@ -925,6 +950,8 @@ function initAdminWorkEditingEvents() {
     uploadedAudioTempName = null;
     const audioStatus = document.getElementById('editWorkAudioStatus');
     if (audioStatus) audioStatus.style.display = 'none';
+    const audioUrlInput = document.getElementById('editWorkAudioUrlInput');
+    if (audioUrlInput) audioUrlInput.value = '';
 
     editingCoverImage = null;
     editingCoverTheme = { ...COVER_GRADIENT_PRESETS[0] };
@@ -974,14 +1001,22 @@ function openEditWorkModal(workId) {
   renderCoverGradientOptions();
   updateCoverPreviewUI();
 
-  // Audio preview in edit form
+  // Audio preview & URL in edit form
   uploadedAudioTempData = work.customAudioData || null;
   uploadedAudioTempName = work.customAudioName || null;
+  const audioUrlInput = document.getElementById('editWorkAudioUrlInput');
+  if (audioUrlInput) {
+    audioUrlInput.value = work.customAudioUrl || '';
+  }
+
   const statusBox = document.getElementById('editWorkAudioStatus');
   const nameEl = document.getElementById('editWorkAudioName');
   if (work.customAudioData && statusBox && nameEl) {
     statusBox.style.display = 'block';
-    nameEl.textContent = work.customAudioName || 'File audio hiện tại';
+    nameEl.textContent = work.customAudioName || 'File audio từ máy';
+  } else if (work.customAudioUrl && statusBox && nameEl) {
+    statusBox.style.display = 'block';
+    nameEl.textContent = 'Link Online: ' + work.customAudioUrl;
   } else if (statusBox) {
     statusBox.style.display = 'none';
   }
@@ -1014,6 +1049,7 @@ function handleSaveWork(e) {
   const sampleIntro = document.getElementById('editWorkSampleIntro').value.trim();
   const fullTextRaw = document.getElementById('editWorkFullText').value.trim();
   const chaptersRaw = document.getElementById('editWorkChapters').value.trim();
+  const audioUrl = document.getElementById('editWorkAudioUrlInput')?.value.trim() || '';
 
   let fullTextSections = [];
   if (fullTextRaw.includes('===')) {
@@ -1084,10 +1120,17 @@ function handleSaveWork(e) {
         };
       }
 
+      // Lưu liên kết âm thanh trực tuyến hoặc file tải lên
+      if (audioUrl) {
+        work.customAudioUrl = audioUrl;
+      } else if (!uploadedAudioTempData && !audioUrl) {
+        delete work.customAudioUrl;
+      }
+
       if (uploadedAudioTempData) {
         work.customAudioData = uploadedAudioTempData;
         work.customAudioName = uploadedAudioTempName;
-      } else if (uploadedAudioTempData === null && !document.getElementById('editWorkAudioStatus')?.style.display.includes('block')) {
+      } else if (uploadedAudioTempData === null && !document.getElementById('editWorkAudioStatus')?.style.display.includes('block') && !audioUrl) {
         delete work.customAudioData;
         delete work.customAudioName;
       }
@@ -1121,6 +1164,7 @@ function handleSaveWork(e) {
       sampleIntro,
       audioScript: `Tác phẩm ${title} của tác giả ${author}. ${summary}`,
       fullTextSections,
+      customAudioUrl: audioUrl || undefined,
       customAudioData: uploadedAudioTempData || undefined,
       customAudioName: uploadedAudioTempName || undefined,
       chapters: chapters.length > 0 ? chapters : [
@@ -1143,6 +1187,9 @@ function handleSaveWork(e) {
   }
 
   saveWorks();
+  if (state.cloudSync && state.cloudSync.enabled) {
+    syncDataToCloud(true);
+  }
   closeModal(document.getElementById('editWorkModal'));
   renderWorks();
   renderFeaturedWork();
@@ -1170,6 +1217,9 @@ function deleteWork(workId) {
   if (confirm(`Bạn có chắc chắn muốn xóa tác phẩm "${work.title}" khỏi kho bài học không?`)) {
     state.works = state.works.filter(w => w.id !== workId);
     saveWorks();
+    if (state.cloudSync && state.cloudSync.enabled) {
+      syncDataToCloud(true);
+    }
     renderWorks();
     updateStats();
     showToast(`Đã xóa tác phẩm "${work.title}".`, 'info');
@@ -1232,13 +1282,17 @@ function initAudioSystem() {
   removeBtn?.addEventListener('click', () => {
     if (!state.isAdmin || !state.activeWorkId) return;
     const work = state.works.find(w => w.id === state.activeWorkId);
-    if (work && confirm(`Bạn có muốn xóa file âm thanh đã tải lên của "${work.title}" không?`)) {
+    if (work && confirm(`Bạn có muốn xóa file âm thanh của "${work.title}" không?`)) {
       delete work.customAudioData;
       delete work.customAudioName;
+      delete work.customAudioUrl;
       saveWorks();
+      if (state.cloudSync && state.cloudSync.enabled) {
+        syncDataToCloud(true);
+      }
       stopAudioPlayback();
       setupWorkAudioPlayer(work);
-      showToast('Đã xóa file âm thanh đã tải lên.', 'info');
+      showToast('Đã xóa file âm thanh.', 'info');
     }
   });
 
@@ -1267,6 +1321,9 @@ function initAudioSystem() {
         work.customAudioData = event.target.result;
         work.customAudioName = file.name;
         saveWorks();
+        if (state.cloudSync && state.cloudSync.enabled) {
+          syncDataToCloud(true);
+        }
         setupWorkAudioPlayer(work);
         showToast(`🎵 Đã tải lên file âm thanh: "${file.name}" thành công!`, 'success');
       }
@@ -1304,6 +1361,8 @@ function initAudioSystem() {
     const statusBox = document.getElementById('editWorkAudioStatus');
     if (statusBox) statusBox.style.display = 'none';
     if (editWorkAudioUpload) editWorkAudioUpload.value = '';
+    const audioUrlInput = document.getElementById('editWorkAudioUrlInput');
+    if (audioUrlInput) audioUrlInput.value = '';
   });
 }
 
@@ -1326,13 +1385,15 @@ function setupWorkAudioPlayer(work) {
     uploadBtnInReader.style.display = state.isAdmin ? 'inline-flex' : 'none';
   }
 
-  if (work && work.customAudioData) {
+  const audioSource = work ? (work.customAudioUrl || work.customAudioData) : null;
+
+  if (work && audioSource) {
     if (playerBar) playerBar.style.display = 'flex';
-    if (badge) badge.textContent = '🎵 File Bạn Tải Lên';
-    if (title) title.textContent = work.customAudioName || `${work.title} (Audio riêng)`;
+    if (badge) badge.textContent = work.customAudioUrl ? '🌐 Audio Trực Tuyến' : '🎵 File Bạn Tải Lên';
+    if (title) title.textContent = work.customAudioName || (work.customAudioUrl ? `${work.title} (Audio Online)` : `${work.title} (Audio riêng)`);
     if (removeBtn) removeBtn.style.display = state.isAdmin ? 'inline-block' : 'none';
     if (customAudioEl) {
-      customAudioEl.src = work.customAudioData;
+      customAudioEl.src = audioSource;
       customAudioEl.currentTime = 0;
     }
   } else {
@@ -1344,14 +1405,15 @@ function setupWorkAudioPlayer(work) {
 function toggleAudioPlay(work) {
   if (!checkActionPermission('canListenAudio', 'Nghe Bình Giảng Audio')) return;
   const customAudioEl = document.getElementById('html5AudioPlayer');
+  const audioSource = work ? (work.customAudioUrl || work.customAudioData) : null;
 
-  if (work && work.customAudioData && customAudioEl) {
+  if (work && audioSource && customAudioEl) {
     stopSpeechSynthesis();
     if (customAudioEl.paused) {
       customAudioEl.play().catch(e => {
         showToast('Không thể phát file âm thanh này', 'error');
       });
-      showToast(`🎵 Đang phát file âm thanh: ${work.customAudioName || work.title}`, 'info');
+      showToast(`🎵 Đang phát âm thanh: ${work.customAudioName || work.title}`, 'info');
     } else {
       customAudioEl.pause();
     }
@@ -2250,3 +2312,335 @@ function showToast(message, type = 'info') {
     setTimeout(() => toast.remove(), 300);
   }, 3200);
 }
+
+/* ==========================================================================
+   6. Google Firebase Cloud Sync Module (Đồng Bộ Đám Mây Trực Tuyến)
+   ========================================================================== */
+
+function getStoredFirebaseConfig() {
+  const saved = localStorage.getItem('vanhoc12_firebase_config');
+  if (saved) {
+    try {
+      return JSON.parse(saved);
+    } catch (e) {
+      console.warn("Lỗi đọc cấu hình Firebase từ localStorage:", e);
+    }
+  }
+  if (typeof DEFAULT_FIREBASE_CONFIG !== 'undefined' && DEFAULT_FIREBASE_CONFIG) {
+    return DEFAULT_FIREBASE_CONFIG;
+  }
+  return null;
+}
+
+function updateCloudStatusUI(status, text) {
+  const badge = document.getElementById('cloudSyncStatusBadge');
+  const badgeText = document.getElementById('cloudSyncStatusText');
+  const modalText = document.getElementById('cloudModalStatusText');
+
+  if (badge) {
+    badge.className = `cloud-status-badge ${status}`;
+  }
+
+  const label = text || (status === 'online' ? 'Đám Mây: Trực Tuyến' : status === 'syncing' ? 'Đám Mây: Đang Đồng Bộ...' : 'Đám Mây: Ngoại Tuyến');
+
+  if (badgeText) badgeText.textContent = label;
+  if (modalText) {
+    if (status === 'online') {
+      modalText.textContent = '🟢 Đã kết nối Đám mây Firebase (Đồng bộ thời gian thực)';
+      modalText.style.color = 'var(--accent-emerald)';
+    } else if (status === 'syncing') {
+      modalText.textContent = '⏳ Đang đồng bộ dữ liệu lên đám mây...';
+      modalText.style.color = 'var(--accent-cyan)';
+    } else {
+      modalText.textContent = '⚪ Ngoại tuyến (Đang dùng dữ liệu trên máy)';
+      modalText.style.color = 'var(--text-secondary)';
+    }
+  }
+}
+
+function initFirebaseCloudSync(customConfig = null) {
+  const config = customConfig || getStoredFirebaseConfig();
+  if (!config) {
+    state.cloudSync.enabled = false;
+    state.cloudSync.connected = false;
+    state.cloudSync.db = null;
+    updateCloudStatusUI('offline', 'Đám Mây: Ngoại Tuyến');
+    return false;
+  }
+
+  if (typeof firebase === 'undefined') {
+    console.warn("Thư viện Firebase SDK chưa sẵn sàng.");
+    updateCloudStatusUI('offline', 'Chưa tải xong SDK');
+    return false;
+  }
+
+  try {
+    let app;
+    if (!firebase.apps.length) {
+      app = firebase.initializeApp(config);
+    } else {
+      app = firebase.app();
+    }
+
+    const db = firebase.database();
+    state.cloudSync.db = db;
+    state.cloudSync.enabled = true;
+
+    // Theo dõi trạng thái kết nối socket thời gian thực với Firebase
+    db.ref('.info/connected').on('value', (snap) => {
+      const isConnected = snap.val() === true;
+      state.cloudSync.connected = isConnected;
+      if (isConnected) {
+        updateCloudStatusUI('online', 'Đám Mây: Trực Tuyến');
+      } else {
+        updateCloudStatusUI('offline', 'Đám Mây: Đang Kết Nối...');
+      }
+    });
+
+    attachFirebaseListeners(db);
+    return true;
+  } catch (err) {
+    console.error("Lỗi khởi tạo Firebase:", err);
+    state.cloudSync.enabled = false;
+    state.cloudSync.connected = false;
+    state.cloudSync.db = null;
+    updateCloudStatusUI('offline', 'Lỗi Cấu Hình Đám Mây');
+    return false;
+  }
+}
+
+function attachFirebaseListeners(db) {
+  if (state.cloudSync.listenersAttached) return;
+  state.cloudSync.listenersAttached = true;
+
+  // 1. Đồng bộ kho tác phẩm (Works)
+  db.ref('vanhoc12/works').on('value', (snapshot) => {
+    if (snapshot.exists()) {
+      let cloudWorks = snapshot.val();
+      if (!Array.isArray(cloudWorks) && typeof cloudWorks === 'object') {
+        cloudWorks = Object.values(cloudWorks);
+      }
+
+      if (Array.isArray(cloudWorks) && cloudWorks.length > 0) {
+        // Hợp nhất dữ liệu mới nhất từ đám mây
+        state.works = cloudWorks;
+        try {
+          localStorage.setItem('vanhoc12_works_v2', JSON.stringify(cloudWorks));
+        } catch (e) {
+          console.warn("Storage quota warning on cloud sync works:", e);
+        }
+        renderWorks();
+        renderFeaturedWork();
+        renderShelfWorks();
+        updateStats();
+
+        if (state.activeWorkId) {
+          const currentWork = state.works.find(w => w.id === state.activeWorkId);
+          if (currentWork) {
+            setupWorkAudioPlayer(currentWork);
+            renderReaderContent();
+          }
+        }
+      }
+    } else if (state.isAdmin && state.works && state.works.length > 0) {
+      // Nếu là Admin và đám mây còn trống, tự động đẩy kho tác phẩm ban đầu lên
+      db.ref('vanhoc12/works').set(JSON.parse(JSON.stringify(state.works))).catch(console.warn);
+    }
+  });
+
+  // 2. Đồng bộ hình nền mặc định toàn web do Admin đặt (Site Background)
+  db.ref('vanhoc12/siteBackground').on('value', (snapshot) => {
+    if (snapshot.exists()) {
+      const bgData = snapshot.val();
+      if (bgData && bgData.customBg !== undefined) {
+        state.siteDefaultBg = bgData.customBg;
+        state.siteDefaultOverlay = bgData.bgOverlay || '70';
+        state.siteDefaultBlur = bgData.bgBlur || '3';
+
+        localStorage.setItem('vanhoc12_site_default_bg', state.siteDefaultBg);
+        localStorage.setItem('vanhoc12_site_default_overlay', state.siteDefaultOverlay);
+        localStorage.setItem('vanhoc12_site_default_blur', state.siteDefaultBlur);
+
+        // Nếu học sinh chưa tự chỉnh hình nền riêng, hiển thị ngay nền Admin cập nhật
+        if (!state.hasUserCustomizedBg) {
+          state.customBg = state.siteDefaultBg;
+          state.bgOverlay = state.siteDefaultOverlay;
+          state.bgBlur = state.siteDefaultBlur;
+          applyBackground();
+        }
+      }
+    } else if (state.isAdmin && state.siteDefaultBg) {
+      db.ref('vanhoc12/siteBackground').set({
+        customBg: state.siteDefaultBg,
+        bgOverlay: state.siteDefaultOverlay,
+        bgBlur: state.siteDefaultBlur
+      }).catch(console.warn);
+    }
+  });
+
+  // 3. Đồng bộ phân quyền khách xem do Admin đặt (Guest Permissions)
+  db.ref('vanhoc12/guestPermissions').on('value', (snapshot) => {
+    if (snapshot.exists()) {
+      const permData = snapshot.val();
+      if (permData && typeof permData === 'object') {
+        state.guestPermissions = { ...DEFAULT_GUEST_PERMISSIONS, ...permData };
+        localStorage.setItem('vanhoc12_guest_perms', JSON.stringify(state.guestPermissions));
+        applyGuestPermissionsUI();
+      }
+    } else if (state.isAdmin) {
+      db.ref('vanhoc12/guestPermissions').set(state.guestPermissions).catch(console.warn);
+    }
+  });
+}
+
+function syncDataToCloud(notify = true) {
+  if (!state.cloudSync || !state.cloudSync.db) return Promise.resolve(false);
+  if (!state.isAdmin) return Promise.resolve(false); // Chỉ Admin mới có quyền đẩy dữ liệu lên
+
+  const db = state.cloudSync.db;
+  updateCloudStatusUI('syncing', 'Đang Đồng Bộ...');
+
+  // Dọn dẹp dữ liệu bài học để loại bỏ các trường undefined trước khi ghi lên RTDB
+  const sanitizedWorks = JSON.parse(JSON.stringify(state.works));
+
+  return Promise.all([
+    db.ref('vanhoc12/works').set(sanitizedWorks),
+    db.ref('vanhoc12/siteBackground').set({
+      customBg: state.siteDefaultBg || state.customBg || '',
+      bgOverlay: state.siteDefaultOverlay || state.bgOverlay || '70',
+      bgBlur: state.siteDefaultBlur || state.bgBlur || '3'
+    }),
+    db.ref('vanhoc12/guestPermissions').set(state.guestPermissions)
+  ]).then(() => {
+    updateCloudStatusUI('online', 'Đám Mây: Đã Đồng Bộ');
+    if (notify) showToast('☁️ Đã đồng bộ bài học, bìa sách và hình nền lên Đám mây trực tuyến thành công!', 'success');
+    return true;
+  }).catch(err => {
+    console.error("Lỗi đồng bộ Firebase:", err);
+    updateCloudStatusUI('offline', 'Lỗi Đồng Bộ');
+    if (notify) showToast('⚠️ Không thể đồng bộ lên Firebase: ' + (err.message || 'Lỗi mạng'), 'error');
+    return false;
+  });
+}
+
+function parseFirebaseConfigInput(rawText) {
+  if (!rawText || !rawText.trim()) return null;
+  const trimmed = rawText.trim();
+
+  // Thử parse dạng JSON chuẩn
+  try {
+    return JSON.parse(trimmed);
+  } catch (e) {
+    // Thử trích xuất object JS
+  }
+
+  try {
+    const firstBrace = trimmed.indexOf('{');
+    const lastBrace = trimmed.lastIndexOf('}');
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+      const objText = trimmed.substring(firstBrace, lastBrace + 1);
+      const fn = new Function('return (' + objText + ')');
+      const result = fn();
+      if (result && typeof result === 'object' && (result.apiKey || result.databaseURL || result.projectId)) {
+        return result;
+      }
+    }
+  } catch (err) {
+    console.warn("Không thể parse cấu hình Firebase:", err);
+  }
+  return null;
+}
+
+function initCloudEvents() {
+  const modal = document.getElementById('firebaseConfigModal');
+  const openBtn = document.getElementById('openCloudConfigBtn');
+  const badgeBtn = document.getElementById('cloudSyncStatusBadge');
+  const closeBtn = document.getElementById('closeFirebaseConfigModalBtn');
+  const cancelBtn = document.getElementById('cancelFirebaseConfigBtn');
+  const saveBtn = document.getElementById('saveFirebaseConfigBtn');
+  const disconnectBtn = document.getElementById('disconnectCloudBtn');
+  const testSyncBtn = document.getElementById('testCloudSyncBtn');
+  const configInput = document.getElementById('firebaseConfigInput');
+
+  function openConfigModal() {
+    const existing = getStoredFirebaseConfig();
+    if (existing && configInput) {
+      configInput.value = JSON.stringify(existing, null, 2);
+    }
+    updateCloudStatusUI(state.cloudSync.connected ? 'online' : state.cloudSync.enabled ? 'syncing' : 'offline');
+    openModal(modal);
+  }
+
+  openBtn?.addEventListener('click', openConfigModal);
+  badgeBtn?.addEventListener('click', openConfigModal);
+
+  [closeBtn, cancelBtn].forEach(b => {
+    b?.addEventListener('click', () => closeModal(modal));
+  });
+
+  saveBtn?.addEventListener('click', () => {
+    const raw = configInput ? configInput.value : '';
+    const parsed = parseFirebaseConfigInput(raw);
+
+    if (!parsed) {
+      showToast('⚠️ Cấu hình Firebase không hợp lệ! Vui lòng copy đúng đoạn firebaseConfig = { ... }', 'error');
+      return;
+    }
+
+    if (!parsed.databaseURL && !parsed.projectId) {
+      showToast('⚠️ Thiếu databaseURL hoặc projectId trong cấu hình Firebase.', 'error');
+      return;
+    }
+
+    // Nếu thiếu databaseURL nhưng có projectId, tự suy luận URL mặc định
+    if (!parsed.databaseURL && parsed.projectId) {
+      parsed.databaseURL = `https://${parsed.projectId}-default-rtdb.firebaseio.com`;
+    }
+
+    try {
+      localStorage.setItem('vanhoc12_firebase_config', JSON.stringify(parsed));
+      const ok = initFirebaseCloudSync(parsed);
+      if (ok) {
+        showToast('🚀 Đang kết nối tới Google Firebase...', 'info');
+        // Nếu là Admin, đẩy toàn bộ dữ liệu hiện tại lên
+        setTimeout(() => {
+          if (state.isAdmin) {
+            syncDataToCloud(true);
+          }
+        }, 800);
+        closeModal(modal);
+      } else {
+        showToast('⚠️ Không thể kết nối Firebase với cấu hình này.', 'error');
+      }
+    } catch (e) {
+      showToast('Lỗi lưu cấu hình: ' + e.message, 'error');
+    }
+  });
+
+  disconnectBtn?.addEventListener('click', () => {
+    if (confirm('Bạn có chắc chắn muốn ngắt kết nối Đám mây Google Firebase không? Web sẽ chuyển về chế độ ngoại tuyến cục bộ.')) {
+      localStorage.removeItem('vanhoc12_firebase_config');
+      state.cloudSync.enabled = false;
+      state.cloudSync.connected = false;
+      state.cloudSync.db = null;
+      state.cloudSync.listenersAttached = false;
+      if (configInput) configInput.value = '';
+      updateCloudStatusUI('offline', 'Đám Mây: Ngoại Tuyến');
+      showToast('Đã ngắt kết nối Đám mây Firebase.', 'info');
+      closeModal(modal);
+    }
+  });
+
+  testSyncBtn?.addEventListener('click', () => {
+    if (!state.cloudSync.enabled) {
+      showToast('Chưa bật Đám mây. Vui lòng dán cấu hình Firebase và bấm Lưu.', 'error');
+      return;
+    }
+    if (!state.isAdmin) {
+      showToast('Đang nhận dữ liệu tự động từ Đám mây Quản trị viên.', 'info');
+      return;
+    }
+    syncDataToCloud(true);
+  });
+}
+
