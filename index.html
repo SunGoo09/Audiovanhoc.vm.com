@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="VănHọc12 — Cẩm nang tri thức, trích dẫn toàn văn tác phẩm, sơ đồ tư duy, dàn ý phân tích 9+ và chế độ quản trị admin độc quyền.">
+  <title>VănHọc12 — Cẩm Nang Toàn Văn & Ôn Thi THPT Quốc Gia 9+</title>
+  
+  <!-- Google Fonts: Be Vietnam Pro (Chuẩn tiếng Việt sắc nét), Plus Jakarta Sans & Merriweather -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Global Page Scroll Progress Bar (Thanh chỉ báo lướt trang trên cùng) -->
+  <div class="global-scroll-progress-bar" id="globalPageProgressBar"></div>
+
+  <!-- Custom Wallpaper Background Layer (Lớp hình nền trang web tùy biến) -->
+  <div class="custom-site-background" id="customSiteBgLayer"></div>
+  <div class="custom-site-bg-overlay" id="customSiteBgOverlay"></div>
+
+  <!-- Ambient Glow Background Accents -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- Header / Navigation -->
+  <header class="site-header" id="header">
+    <div class="container header-container">
+      <div class="brand">
+        <a href="#home" class="logo-link">
+          <div class="logo-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              <path d="M8 7h8"></path>
+              <path d="M8 11h6"></path>
+            </svg>
+          </div>
+          <span class="logo-text">VănHọc<span class="logo-accent">12</span></span>
+        </a>
+        <span class="badge-tag">Toàn Văn SGK & 9+</span>
+      </div>
+
+      <!-- Live Search Bar -->
+      <div class="search-wrapper">
+        <div class="search-box">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="searchInput" placeholder="Tìm tác phẩm, câu thơ, trích đoạn... (Nhấn '/' để tìm)" autocomplete="off">
+          <kbd class="search-kbd">/</kbd>
+          <button class="search-clear-btn" id="searchClearBtn" title="Xóa tìm kiếm" style="display:none;">&times;</button>
+        </div>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="nav-menu">
+        <a href="#explore" class="nav-link active" data-nav="explore">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+          Tác Phẩm 12
+        </a>
+        <a href="#shelf" class="nav-link" data-nav="shelf">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+          Tủ Bài Ôn (<span id="shelfCountBadge">0</span>)
+        </a>
+        <a href="#goals" class="nav-link" data-nav="goals">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="m10 15 5-3-5-3v6Z"></path></svg>
+          Lộ Trình Ôn
+        </a>
+        <a href="#notes" class="nav-link" data-nav="notes">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          Sổ Tay Dẫn Chứng
+        </a>
+      </nav>
+
+      <!-- Action Buttons & Admin Controls -->
+      <div class="header-actions">
+        <!-- Theme Toggle -->
+        <button id="themeToggleBtn" class="action-btn icon-btn" title="Đổi giao diện Tối / Sáng" aria-label="Đổi giao diện">
+          <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+
+        <!-- Custom Wallpaper Button -->
+        <button id="openBgCustomizerBtn" class="action-btn icon-btn" title="Đổi & Tùy biến hình nền trang web" aria-label="Đổi hình nền trang web">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/><path d="M12 22.5V2.69"/></svg>
+        </button>
+
+        <!-- Cloud Sync Status Pill (Chỉ hiển thị khi Admin đăng nhập) -->
+        <div id="cloudSyncStatusBadge" class="cloud-status-badge offline" style="display:none;" title="Trạng thái kết nối Đám Mây Trực Tuyến (Google Firebase)">
+          <span class="cloud-status-dot"></span>
+          <span id="cloudSyncStatusText">Đám Mây: Ngoại Tuyến</span>
+        </div>
+
+        <!-- Admin Control Dropdown / Button -->
+        <div class="admin-wrapper" id="adminWrapper">
+          <!-- Button when NOT logged in as Admin -->
+          <button id="openAdminLoginBtn" class="btn btn-secondary btn-sm" title="Chế độ Quản Trị Viên (Dành riêng cho bạn)">
+            <span>👑 Đăng Nhập Admin</span>
+          </button>
+
+          <!-- Area when LOGGED IN as Admin -->
+          <div id="adminBadgeGroup" class="admin-badge-group" style="display:none;">
+            <button id="openAddWorkAdminBtn" class="btn btn-primary btn-sm" title="Thêm tác phẩm mới vào kho">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>+ Thêm Bài</span>
+            </button>
+
+            <!-- Admin Dropdown Menu -->
+            <div class="admin-dropdown-wrap" id="adminDropdownWrap">
+              <button id="adminDropdownToggleBtn" class="btn btn-secondary btn-sm admin-dropdown-btn" type="button" title="Menu Quản Trị Viên">
+                <span class="crown-icon">👑</span>
+                <span>Quản Trị</span>
+                <svg class="dropdown-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              
+              <div class="admin-dropdown-menu" id="adminDropdownMenu">
+                <div class="admin-dropdown-header">
+                  <span class="crown-icon-badge">👑</span>
+                  <div>
+                    <div class="admin-dropdown-name">Admin Độc Quyền</div>
+                    <div class="admin-dropdown-sub">Toàn quyền quản trị hệ thống</div>
+                  </div>
+                </div>
+                <div class="admin-dropdown-divider"></div>
+                <button id="openPermissionsModalBtn" class="admin-dropdown-item" type="button">
+                  <span class="dropdown-item-icon">⚙️</span>
+                  <div class="dropdown-item-text">
+                    <span class="item-title">Phân Quyền Khách Xem</span>
+                    <span class="item-sub">Khóa / mở tính năng người xem</span>
+                  </div>
+                </button>
+                <button id="openCloudConfigBtn" class="admin-dropdown-item" type="button">
+                  <span class="dropdown-item-icon">☁️</span>
+                  <div class="dropdown-item-text">
+                    <span class="item-title">Đồng Bộ Đám Mây</span>
+                    <span class="item-sub">Google Firebase Realtime</span>
+                  </div>
+                </button>
+                <div class="admin-dropdown-divider"></div>
+                <button id="adminLogoutBtn" class="admin-dropdown-item dropdown-logout-btn" type="button">
+                  <span class="dropdown-item-icon">🚪</span>
+                  <div class="dropdown-item-text">
+                    <span class="item-title">Đăng Xuất Admin</span>
+                    <span class="item-sub">Về chế độ khách xem</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Study Streak Badge -->
+        <div class="user-chip" title="Chuỗi ngày ôn luyện">
+          <span class="flame-icon">🔥</span>
+          <span class="streak-count" id="streakCount">14</span>
+          <span class="streak-label">ngày</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- Hero / Featured Work Spotlight -->
+    <section class="hero-section" id="home">
+      <div class="container hero-container">
+        <div class="hero-left">
+          <div class="featured-badge">
+            <span class="badge-dot"></span>
+            <span>Tác Phẩm Tiêu Điểm Thi Tốt Nghiệp THPT</span>
+          </div>
+
+          <h1 class="hero-title" id="featuredTitle">Vợ Chồng A Phủ</h1>
+          
+          <p class="hero-subtitle" id="featuredSubtitle">
+            Bức tranh chân thực về số phận đau thương của người nông dân nghèo Tây Bắc dưới ách áp bức của phong kiến thực dân, và ngợi ca sức sống tiềm tàng, khát vọng tự do mãnh liệt của Mị và A Phủ.
+          </p>
+
+          <div class="hero-meta-row">
+            <div class="meta-item">
+              <span class="meta-label">Tác giả</span>
+              <strong class="meta-value" id="featuredAuthor">Tô Hoài</strong>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Thời gian ôn</span>
+              <strong class="meta-value" id="featuredTime">~ 35 Phút</strong>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Độ trọng tâm</span>
+              <strong class="meta-value rating-val" id="featuredRating">⭐ 9.8 / 10</strong>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Thể loại</span>
+              <strong class="meta-value tag-val" id="featuredCategory">Truyện Ngắn & Ký</strong>
+            </div>
+          </div>
+
+          <div class="hero-actions">
+            <button class="btn btn-primary btn-lg" id="featuredReadBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <span>Đọc Toàn Văn & Dàn Ý 9+</span>
+            </button>
+            <button class="btn btn-secondary btn-lg" id="featuredListenBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+              <span>Nghe Bình Giảng Audio</span>
+            </button>
+            <button class="btn btn-ghost btn-lg" id="featuredBookmarkBtn" title="Lưu tủ bài ôn">
+              <svg class="heart-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              <span id="featuredBookmarkText">Lưu Tủ Bài Ôn</span>
+            </button>
+          </div>
+
+          <!-- Literary Quote Box -->
+          <div class="quote-card">
+            <div class="quote-icon">“</div>
+            <div class="quote-content">
+              <p class="quote-text" id="dailyQuoteText">"Văn học thực chất là nhân học. Văn học giúp con người hiểu được bản thân mình, nâng cao niềm tin vào chính mình và làm nảy nở ở con người khát vọng hướng tới chân lý."</p>
+              <div class="quote-author-row">
+                <span class="quote-author" id="dailyQuoteAuthor">— Maxim Gorky (Lý luận văn học)</span>
+                <button class="quote-refresh-btn" id="refreshQuoteBtn" title="Đổi nhận định văn học khác">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+                  Đổi nhận định khác
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero 3D Book Display -->
+        <div class="hero-right">
+          <div class="book-3d-scene" id="featuredBook3D">
+            <div class="book-spine-depth"></div>
+            <div class="book-3d-card" id="featuredBookCard">
+              <div class="book-cover-gradient" style="background: linear-gradient(135deg, #091a36 0%, #1e1b4b 50%, #4338ca 100%);">
+                <div class="book-cover-inner">
+                  <div class="book-cover-badge">TOÀN VĂN SGK 12</div>
+                  <div class="book-cover-graphic">
+                    <div class="neural-sphere" style="background: radial-gradient(circle, #a78bfa 0%, #4338ca 80%); box-shadow: 0 0 35px #8b5cf6;"></div>
+                    <div class="neural-ring ring-1"></div>
+                    <div class="neural-ring ring-2"></div>
+                  </div>
+                  <div class="book-cover-titles">
+                    <span class="cover-pre">NGỮ VĂN 12 — CHUẨN BỘ GD</span>
+                    <h3 class="cover-main-title">VỢ CHỒNG A PHỦ</h3>
+                    <p class="cover-author-name">NHÀ VĂN TÔ HOÀI</p>
+                  </div>
+                </div>
+              </div>
+              <div class="book-ribbon"></div>
+            </div>
+            <div class="book-shadow"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reading Progress & Study Goals Dashboard -->
+    <section class="dashboard-section" id="goals">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Bảng Theo Dõi Ôn Luyện Thi Tốt Nghiệp THPT</h2>
+            <p class="section-desc">Kế hoạch ôn tập toàn diện 100% tác phẩm trọng tâm và các chuyên đề Đọc hiểu, Nghị luận xã hội.</p>
+          </div>
+          <div class="dashboard-tag">Mục Tiêu Điểm 9+ Năm 2026</div>
+        </div>
+
+        <div class="stats-grid">
+          <!-- Card 1: Works Mastered -->
+          <div class="stat-card glass-card">
+            <div class="stat-card-header">
+              <span class="stat-icon-wrap icon-purple">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+              </span>
+              <span class="stat-trend positive">+2 bài tuần này</span>
+            </div>
+            <div class="stat-main">
+              <div class="stat-number"><span id="readCountGoal">6</span> / <span id="targetCountGoal">6</span></div>
+              <div class="stat-label">Tác phẩm trọng tâm đã nắm vững</div>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" style="width: 100%;"></div>
+            </div>
+            <div class="stat-footer-text">Đã bao phủ 100% các tác phẩm lớn trong chương trình</div>
+          </div>
+
+          <!-- Card 2: Hours Studied This Week -->
+          <div class="stat-card glass-card">
+            <div class="stat-card-header">
+              <span class="stat-icon-wrap icon-cyan">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </span>
+              <span class="stat-trend positive">🔥 Tự giác cao</span>
+            </div>
+            <div class="stat-main">
+              <div class="stat-number">14.5 <span class="stat-unit">Giờ</span></div>
+              <div class="stat-label">Thời gian luyện đọc & nghiền ngẫm bài</div>
+            </div>
+            <!-- Weekly Mini Chart -->
+            <div class="mini-chart">
+              <div class="chart-col" style="--height: 45%;" title="Thứ 2: 1.2h"><span>T2</span></div>
+              <div class="chart-col" style="--height: 60%;" title="Thứ 3: 1.8h"><span>T3</span></div>
+              <div class="chart-col" style="--height: 80%;" title="Thứ 4: 2.2h"><span>T4</span></div>
+              <div class="chart-col" style="--height: 65%;" title="Thứ 5: 1.9h"><span>T5</span></div>
+              <div class="chart-col" style="--height: 95%;" title="Thứ 6: 3.1h"><span>T6</span></div>
+              <div class="chart-col active" style="--height: 90%;" title="Thứ 7: 2.8h"><span>T7</span></div>
+              <div class="chart-col" style="--height: 55%;" title="Chủ nhật: 1.5h"><span>CN</span></div>
+            </div>
+          </div>
+
+          <!-- Card 3: Notes & Evidence Saved -->
+          <div class="stat-card glass-card">
+            <div class="stat-card-header">
+              <span class="stat-icon-wrap icon-amber">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              </span>
+              <span class="stat-trend positive">Sổ tay dẫn chứng</span>
+            </div>
+            <div class="stat-main">
+              <div class="stat-number"><span id="totalNotesCountStat">3</span> <span class="stat-unit">Dẫn chứng</span></div>
+              <div class="stat-label">Dẫn chứng vàng & Nhận định LLVH</div>
+            </div>
+            <div class="stat-subrow">
+              <div class="substat">
+                <span class="substat-label">Kỹ năng Đọc - Hiểu</span>
+                <span class="substat-val">3.0 / 3.0đ</span>
+              </div>
+              <div class="substat">
+                <span class="substat-label">Trạng thái Admin</span>
+                <span class="substat-val" id="adminStatusDisplay">Chế độ Xem</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Works Explorer Section -->
+    <section class="library-section" id="explore">
+      <div class="container">
+        <!-- Toolbar -->
+        <div class="library-toolbar">
+          <!-- Category Tabs -->
+          <div class="category-filters" id="categoryFilters">
+            <button class="filter-btn active" data-category="all">Tất Cả Tác Phẩm (<span id="totalBooksCount">6</span>)</button>
+            <button class="filter-btn" data-category="prose">🏔️ Truyện Ngắn & Ký Hiện Thực</button>
+            <button class="filter-btn" data-category="poetry">🎖️ Thơ Ca Kháng Chiến & Đất Nước</button>
+            <button class="filter-btn" data-category="custom">✨ Tác Phẩm Admin Bổ Sung</button>
+          </div>
+
+          <!-- Sub Filter / Sort Bar -->
+          <div class="sort-bar">
+            <!-- View Mode Switch -->
+            <div class="filter-pills" id="statusPills">
+              <button class="pill-btn active" data-status="all">Tất Cả</button>
+              <button class="pill-btn" data-status="reading">Đang Ôn Luyện</button>
+              <button class="pill-btn" data-status="saved">Đã Lưu Tủ Bài</button>
+              <button class="pill-btn" data-status="completed">Đã Thuộc Dàn Ý</button>
+            </div>
+
+            <!-- Sort Select -->
+            <div class="sort-wrapper">
+              <label for="sortSelect">Sắp xếp:</label>
+              <select id="sortSelect" class="styled-select">
+                <option value="popular">Độ trọng tâm thi cử</option>
+                <option value="rating">Đánh giá điểm số</option>
+                <option value="title">Tên tác phẩm A → Z</option>
+                <option value="pages-asc">Thời lượng ôn (Ngắn trước)</option>
+                <option value="pages-desc">Thời lượng ôn (Dài trước)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Books / Works Grid -->
+        <div class="books-grid" id="booksGrid">
+          <!-- Injected dynamically by app.js -->
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+          <div class="empty-icon">🔍</div>
+          <h3>Không tìm thấy tác phẩm nào phù hợp</h3>
+          <p>Thử tìm theo tên tác giả hoặc câu thơ xem sao nhé!</p>
+          <button class="btn btn-secondary" id="resetFiltersBtn">Xem lại tất cả tác phẩm</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- My Shelf Section -->
+    <section class="shelf-section" id="shelf" style="display:none;">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Tủ Bài Ôn Tập Cá Nhân Của Bạn</h2>
+            <p class="section-desc">Không gian lưu lại các tác phẩm bạn đang cần củng cố kiến thức trước ngày thi.</p>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="backToExploreBtn">← Trở về danh sách tác phẩm</button>
+        </div>
+
+        <div class="shelf-tabs">
+          <button class="shelf-tab-btn active" data-shelftab="all">Tất cả trong tủ (<span id="shelfAllCount">0</span>)</button>
+          <button class="shelf-tab-btn" data-shelftab="reading">Đang ôn dở</button>
+          <button class="shelf-tab-btn" data-shelftab="completed">Đã thuộc dàn ý</button>
+        </div>
+
+        <div class="books-grid" id="shelfGrid">
+          <!-- Rendered by JS -->
+        </div>
+
+        <div class="empty-state" id="shelfEmptyState" style="display: none;">
+          <div class="empty-icon">📚</div>
+          <h3>Tủ bài ôn của bạn đang trống</h3>
+          <p>Hãy nhấn nút hình trái tim 🔖 "Lưu Tủ Bài Ôn" ở bất kỳ tác phẩm nào để đưa vào đây nhé!</p>
+          <button class="btn btn-primary" onclick="switchSection('explore')">Khám phá tác phẩm ngay</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Notes & Literary Quotes Section -->
+    <section class="notes-section" id="notes">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Sổ Tay Dẫn Chứng Vàng & Nhận Định LLVH</h2>
+            <p class="section-desc">Kho tài liệu đắt giá giúp bài văn của bạn nâng tầm đạt điểm 8.5 đến 9.5+ trong kỳ thi tốt nghiệp.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" id="openAddNoteModalBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Thêm Dẫn Chứng / Ghi Chú
+          </button>
+        </div>
+
+        <div class="notes-grid" id="notesGrid">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <div class="empty-state" id="notesEmptyState" style="display: none;">
+          <div class="empty-icon">📝</div>
+          <h3>Chưa có ghi chú nào</h3>
+          <p>Khi đọc bài phân tích, bạn có thể lưu lại những dẫn chứng hay trực tiếp vào sổ tay này!</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Reader Modal (Interactive E-Reader with Full Text & Outlines) -->
+  <div class="reader-modal-overlay" id="readerModalOverlay">
+    <div class="reader-modal-dialog">
+      <!-- Top Reader Toolbar -->
+      <header class="reader-toolbar">
+        <div class="reader-title-info">
+          <span class="reader-book-tag" id="readerBookCategory">Truyện Ngắn & Ký</span>
+          <h2 class="reader-book-title" id="readerBookTitle">Vợ Chồng A Phủ</h2>
+          <span class="reader-book-author" id="readerBookAuthor">Tô Hoài</span>
+        </div>
+
+        <!-- Customization Controls -->
+        <div class="reader-controls">
+          <!-- Mode Tabs: Full Text vs Outlines vs Sample Intro -->
+          <div class="reader-nav-tabs">
+            <button class="reader-tab-btn active" id="tabFullTextBtn" data-readertab="fulltext">
+              📜 Toàn Văn Trích Dẫn
+            </button>
+            <button class="reader-tab-btn" id="tabOutlinesBtn" data-readertab="outlines">
+              🧠 Dàn Ý Phân Tích 9+
+            </button>
+          </div>
+
+          <!-- Text Size -->
+          <div class="reader-control-group" title="Cỡ chữ">
+            <button class="ctrl-btn" id="decreaseFontSizeBtn" title="Thu nhỏ chữ (A-)">A-</button>
+            <span class="font-size-indicator" id="fontSizeIndicator">20px</span>
+            <button class="ctrl-btn" id="increaseFontSizeBtn" title="Phóng to chữ (A+)">A+</button>
+            <button class="ctrl-btn font-reset-btn" id="resetFontSizeBtn" title="Đặt lại cỡ chữ chuẩn">Mặc định</button>
+          </div>
+
+          <!-- Line Height / Spacing Control -->
+          <button class="ctrl-btn" id="toggleLineHeightBtn" title="Đổi giãn cách dòng (Thoáng / Vừa)">
+            <span id="lineHeightLabel">Dòng: Thoáng</span>
+          </button>
+
+          <!-- Font Style -->
+          <button class="ctrl-btn" id="toggleFontFamilyBtn" title="Đổi kiểu phông (Serif / Sans-serif)">
+            <span id="fontFamilyLabel">Serif</span>
+          </button>
+
+          <!-- Reading Theme Mode (Sepia / Dark / Light) -->
+          <div class="theme-pills">
+            <button class="theme-pill-btn dark active" data-readertheme="dark" title="Nền tối dịu mắt"></button>
+            <button class="theme-pill-btn sepia" data-readertheme="sepia" title="Nền giấy Sepia ấm"></button>
+            <button class="theme-pill-btn light" data-readertheme="light" title="Nền sáng thanh lịch"></button>
+          </div>
+
+          <!-- Audio Voice Reader Button -->
+          <button class="btn btn-audio-play" id="audioReaderToggleBtn" title="Phát âm thanh đọc bài giảng">
+            <svg class="play-audio-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <svg class="pause-audio-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+            <span id="audioReaderBtnText">Nghe Bình Giảng</span>
+          </button>
+
+          <!-- Upload Audio Button in Reader (Admin Only) -->
+          <button class="btn btn-secondary btn-sm admin-only-btn" id="readerUploadAudioBtn" style="display:none;" title="Tải lên file MP3 bình giảng của riêng bạn">
+            🎵 Tải Audio MP3
+          </button>
+          <input type="file" id="readerAudioFileInput" accept="audio/*" style="display:none;">
+
+          <!-- Admin Quick Edit Button inside Reader (Only visible to Admin) -->
+          <button class="btn btn-secondary btn-sm admin-only-btn" id="adminEditCurrentWorkBtn" style="display:none;" title="Chỉnh sửa tác phẩm này (Quyền Admin)">
+            ✏️ Sửa Tác Phẩm
+          </button>
+
+          <!-- Close Modal -->
+          <button class="close-modal-btn" id="closeReaderModalBtn" title="Đóng trình đọc (&times;)">&times;</button>
+        </div>
+      </header>
+
+      <!-- Reading Progress Line -->
+      <div class="reader-progress-line">
+        <div class="reader-progress-bar" id="readerScrollProgressBar"></div>
+      </div>
+
+      <!-- Custom Audio Player Bar (Plays user uploaded MP3 or Web Speech AI) -->
+      <div class="custom-audio-player-bar" id="customAudioPlayerBar" style="display:none;">
+        <div class="audio-player-info">
+          <span class="audio-source-badge" id="audioSourceBadge">🎵 File Tự Tải Lên</span>
+          <span class="audio-track-title" id="audioTrackTitle">Bình giảng riêng</span>
+        </div>
+        <div class="audio-player-timeline">
+          <span class="audio-time-label" id="audioCurrentTime">0:00</span>
+          <input type="range" class="audio-seek-slider" id="audioSeekSlider" value="0" min="0" max="100">
+          <span class="audio-time-label" id="audioDuration">0:00</span>
+        </div>
+        <div class="audio-player-actions">
+          <button class="audio-mini-btn" id="audioResetBtn" title="Phát lại từ đầu">⏮</button>
+          <button class="audio-mini-btn" id="removeCustomAudioBtn" title="Xóa file âm thanh này" style="color: var(--accent-rose); display:none;">✕ Xóa file</button>
+        </div>
+      </div>
+      <audio id="html5AudioPlayer" preload="auto" style="display:none;"></audio>
+
+      <!-- Reader Main Area -->
+      <div class="reader-body">
+        <!-- Sidebar Navigation -->
+        <aside class="reader-sidebar" id="readerSidebar">
+          <div class="sidebar-header">
+            <h4 id="readerSidebarTitle">Mục Lục Trích Đoạn</h4>
+          </div>
+          <ul class="chapter-list" id="chapterList">
+            <!-- Injected by JS -->
+          </ul>
+
+          <div class="sidebar-quote-box">
+            <h5>💡 Lưu Ý Dành Cho Học Sinh</h5>
+            <p>Thuộc văn bản gốc và trích dẫn chính xác từ ngữ đắt giá là bí quyết ghi điểm 9+ phần Nghị luận văn học!</p>
+          </div>
+        </aside>
+
+        <!-- Reading Content Viewer -->
+        <article class="reader-content-scroll" id="readerContentScroll">
+          <div class="reader-page-container" id="readerPageContainer">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <!-- Quick Scroll Helper inside Reader Modal -->
+          <div class="reader-scroll-helper" id="readerScrollHelper">
+            <button class="reader-scroll-btn" id="readerScrollTopBtn" title="Lướt nhanh lên đầu bài đọc">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+              <span>Lên đầu bài</span>
+            </button>
+            <button class="reader-scroll-btn" id="readerScrollBottomBtn" title="Lướt nhanh xuống cuối bài đọc">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+              <span>Xuống cuối bài</span>
+            </button>
+          </div>
+        </article>
+      </div>
+
+      <!-- Footer Bar -->
+      <footer class="reader-footer">
+        <div class="reader-footer-info">
+          <span id="readerCurrentChapter">Phần I: Thân phận con dâu gạt nợ</span>
+          <span class="bullet">•</span>
+          <span id="readerPageProgress">Mục 1 / 3</span>
+        </div>
+        <div class="reader-footer-actions">
+          <button class="btn btn-secondary btn-sm" id="prevChapterBtn">← Phần Trước</button>
+          <button class="btn btn-primary btn-sm" id="nextChapterBtn">Phần Tiếp Theo →</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Admin Login Modal -->
+  <div class="modal-overlay" id="adminLoginModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>👑 Đăng Nhập Chế Độ Quản Trị Viên (Admin)</h3>
+        <button class="close-modal-btn" id="closeAdminLoginModalBtn">&times;</button>
+      </div>
+      <form id="adminLoginForm" class="modal-form">
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 8px;">
+          Chế độ này dành riêng cho bạn để chỉnh sửa nội dung, thêm xóa tác phẩm và giới hạn quyền các nút mà người khác được phép bấm.
+        </p>
+        <div class="form-group">
+          <label for="adminPasswordInput">Mật khẩu Quản Trị Viên *</label>
+          <input type="password" id="adminPasswordInput" required placeholder="Nhập mật khẩu quản trị viên..." autocomplete="current-password">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelAdminLoginBtn">Hủy</button>
+          <button type="submit" class="btn btn-primary">Xác Nhận Đăng Nhập</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Permissions Setting Modal (Phân Quyền Khách Xem) -->
+  <div class="modal-overlay" id="permissionsModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>⚙️ Bảng Phân Quyền Khách Xem (Chỉ Admin Điều Khiển)</h3>
+        <button class="close-modal-btn" id="closePermissionsModalBtn">&times;</button>
+      </div>
+      <form id="permissionsForm" class="modal-form">
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 12px;">
+          Tùy chọn những nút và tính năng mà người khác (học sinh/khách xem) được phép nhấn:
+        </p>
+
+        <div class="permission-item">
+          <label class="perm-checkbox-label">
+            <input type="checkbox" id="permCanListenAudio" checked>
+            <div>
+              <strong>Cho phép khách nghe Bình Giảng Audio</strong>
+              <p>Khách có thể bấm nút nghe giọng đọc bài giảng tự động.</p>
+            </div>
+          </label>
+        </div>
+
+        <div class="permission-item">
+          <label class="perm-checkbox-label">
+            <input type="checkbox" id="permCanCopyNotes" checked>
+            <div>
+              <strong>Cho phép khách Sao chép dẫn chứng</strong>
+              <p>Khách có thể copy trích dẫn và dẫn chứng vào bộ nhớ tạm.</p>
+            </div>
+          </label>
+        </div>
+
+        <div class="permission-item">
+          <label class="perm-checkbox-label">
+            <input type="checkbox" id="permCanBookmarkWorks" checked>
+            <div>
+              <strong>Cho phép khách Lưu tác phẩm vào Tủ bài ôn</strong>
+              <p>Khách có thể nhấn nút trái tim để đánh dấu tác phẩm đang ôn.</p>
+            </div>
+          </label>
+        </div>
+
+        <div class="permission-item">
+          <label class="perm-checkbox-label">
+            <input type="checkbox" id="permCanAddPersonalNotes" checked>
+            <div>
+              <strong>Cho phép khách Thêm ghi chú cá nhân của họ</strong>
+              <p>Khách có thể tạo các ghi chú riêng phục vụ học tập.</p>
+            </div>
+          </label>
+        </div>
+
+        <div class="permission-item">
+          <label class="perm-checkbox-label">
+            <input type="checkbox" id="permAllowTextSelection" checked>
+            <div>
+              <strong>Cho phép bôi đen chọn văn bản</strong>
+              <p>Nếu tắt, khách sẽ không thể bôi đen copy nội dung trang web.</p>
+            </div>
+          </label>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelPermissionsBtn">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu Phân Quyền</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Edit / Add Work Modal -->
+  <div class="modal-overlay" id="editWorkModal">
+    <div class="modal-card" style="max-width: 680px;">
+      <div class="modal-header">
+        <h3 id="editWorkModalTitle">✏️ Chỉnh Sửa Tác Phẩm (Chỉ Admin)</h3>
+        <button class="close-modal-btn" id="closeEditWorkModalBtn">&times;</button>
+      </div>
+      <form id="editWorkForm" class="modal-form">
+        <input type="hidden" id="editWorkId">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="editWorkTitle">Tên Tác Phẩm *</label>
+            <input type="text" id="editWorkTitle" required placeholder="Tên tác phẩm">
+          </div>
+          <div class="form-group">
+            <label for="editWorkAuthor">Tác Giả *</label>
+            <input type="text" id="editWorkAuthor" required placeholder="Tên tác giả">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="editWorkCategory">Thể Loại *</label>
+            <select id="editWorkCategory">
+              <option value="prose">Truyện Ngắn & Ký Hiện Thực</option>
+              <option value="poetry">Thơ Ca Kháng Chiến & Đất Nước</option>
+              <option value="custom">Chuyên Đề Khác</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="editWorkPeriod">Năm Sáng Tác / Bối Cảnh</label>
+            <input type="text" id="editWorkPeriod" placeholder="Ví dụ: 1952 (Tây Bắc)">
+          </div>
+        </div>
+
+        <!-- Book Cover Customization (Hình vỏ ngoài của sách) -->
+        <div class="form-group book-cover-edit-section">
+          <label>🎨 Hình Vỏ Ngoài / Ảnh Bìa Tác Phẩm</label>
+          <div class="cover-edit-flex">
+            <!-- Real-time Preview of the Book Cover -->
+            <div class="cover-preview-wrapper">
+              <div class="cover-preview-card" id="editWorkCoverPreview" style="background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);">
+                <div class="cover-preview-spine"></div>
+                <div class="cover-preview-inner">
+                  <span class="cover-preview-icon" id="editWorkCoverPreviewIcon">📖</span>
+                  <div class="cover-preview-titles">
+                    <strong class="cover-preview-title" id="editWorkCoverPreviewTitle">Tên Tác Phẩm</strong>
+                    <span class="cover-preview-author" id="editWorkCoverPreviewAuthor">Tác giả</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cover Controls -->
+            <div class="cover-controls-wrapper">
+              <div class="cover-upload-row">
+                <label for="editWorkCoverFileInput" class="btn btn-secondary btn-sm" style="cursor: pointer;">
+                  📁 Tải ảnh bìa riêng từ máy (.jpg, .png)
+                </label>
+                <input type="file" id="editWorkCoverFileInput" accept="image/*" style="display: none;">
+                <button type="button" class="btn btn-ghost btn-sm" id="clearWorkCoverBtn" style="color: var(--accent-rose); display: none;">
+                  ✕ Xóa ảnh bìa
+                </button>
+              </div>
+
+              <div class="form-group" style="margin-top: 8px;">
+                <input type="url" id="editWorkCoverUrlInput" placeholder="Hoặc dán link ảnh bìa (URL https://...)" style="font-size: 0.85rem;">
+              </div>
+
+              <!-- Cover Theme Color & Icon Presets -->
+              <div class="cover-theme-picker">
+                <label style="font-size: 0.78rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Hoặc chọn màu bìa gradient & biểu tượng:</label>
+                <div class="cover-gradient-options" id="coverGradientOptions">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="editWorkSummary">Tóm Tắt / Khái Quát Giá Trị Tác Phẩm *</label>
+          <textarea id="editWorkSummary" rows="2" required placeholder="Khái quát nội dung và giá trị tác phẩm"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="editWorkSampleIntro">Gợi Ý Mở Bài So Sánh Điểm 9+</label>
+          <textarea id="editWorkSampleIntro" rows="2" placeholder="Đoạn văn mở bài mẫu so sánh điểm cao..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="editWorkFullText">Toàn Bộ Văn Bản / Các Đoạn Trích Dẫn Chuẩn SGK *</label>
+          <textarea id="editWorkFullText" rows="6" required placeholder="Dán toàn bộ bài thơ hoặc các đoạn trích văn xuôi chuẩn SGK vào đây..."></textarea>
+          <small style="color: var(--text-muted); font-size: 0.78rem;">* Mẹo: Các đoạn trích có thể phân cách nhau bằng dấu sao (* * *) hoặc tiêu đề phần.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="editWorkChapters">Dàn Ý Các Luận Điểm Phân Tích (Mỗi dòng một ý hoặc gạch đầu dòng)</label>
+          <textarea id="editWorkChapters" rows="4" placeholder="Luận điểm 1: ...&#10;Luận điểm 2: ..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="editWorkAudioUpload">🎵 File Âm Thanh Bài Giảng Bình Luận</label>
+          <div style="margin-bottom: 8px;">
+            <input type="url" id="editWorkAudioUrlInput" placeholder="Dán liên kết âm thanh trực tuyến (https://.../audio.mp3) — Học sinh nghe được online ngay" style="font-size: 0.85rem;">
+          </div>
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <label for="editWorkAudioUpload" class="btn btn-secondary btn-sm" style="cursor: pointer;">
+              📁 Hoặc chọn file âm thanh từ máy (.mp3, .wav, .m4a)
+            </label>
+            <input type="file" id="editWorkAudioUpload" accept="audio/*" style="display: none;">
+            <div id="editWorkAudioStatus" style="font-size: 0.8rem; color: var(--accent-cyan); display: none;">
+              <span>Đang gắn: <strong id="editWorkAudioName"></strong></span>
+              <button type="button" id="clearEditWorkAudioBtn" style="background: none; border: none; color: var(--accent-rose); cursor: pointer; margin-left: 8px; font-weight: 700;">✕ Xóa</button>
+            </div>
+          </div>
+          <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">* Mẹo: Dán link URL âm thanh trực tiếp (Google Drive/Dropbox/Catbox) giúp đồng bộ đám mây và mọi học sinh nghe được 100%.</small>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelEditWorkBtn">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Note / Evidence Modal -->
+  <div class="modal-overlay" id="addNoteModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>📝 Thêm Dẫn Chứng / Nhận Định Mới</h3>
+        <button class="close-modal-btn" id="closeAddNoteModalBtn">&times;</button>
+      </div>
+      <form id="addNoteForm" class="modal-form">
+        <div class="form-group">
+          <label for="noteBookSelect">Thuộc Tác Phẩm</label>
+          <select id="noteBookSelect">
+            <!-- Populated by JS -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="noteContent">Nội Dung Dẫn Chứng Vàng / Nhận Định LLVH *</label>
+          <textarea id="noteContent" rows="4" required placeholder="Ghi lại câu trích dẫn hoặc phân tích sâu sắc..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="noteTag">Thẻ Phân Loại</label>
+          <input type="text" id="noteTag" placeholder="Ví dụ: #DanChungVang, #MoBaiNangCao, #LyLuanVanHoc">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelAddNoteBtn">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu Vào Sổ Tay</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Website Background Customizer Modal -->
+  <div class="modal-overlay" id="bgCustomizerModal">
+    <div class="modal-card" style="max-width: 650px;">
+      <div class="modal-header">
+        <h3>🎨 Cài Đặt & Chỉnh Sửa Hình Nền Trang Web</h3>
+        <button class="close-modal-btn" id="closeBgCustomizerModalBtn">&times;</button>
+      </div>
+      <div class="modal-form">
+        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 8px;">
+          Tùy biến hình nền không gian học tập theo sở thích riêng của bạn. Hình nền sẽ tự động lưu lại và sẵn sàng mỗi khi mở web.
+        </p>
+
+        <!-- Preview Box of Current Background -->
+        <div class="bg-preview-box" id="bgPreviewBox">
+          <div class="bg-preview-content">
+            <span class="bg-preview-badge">Xem Trước Không Gian Học Tập</span>
+            <h4 class="bg-preview-sample-title">VănHọc12 — Cẩm Nang Tri Thức</h4>
+            <p class="bg-preview-sample-desc">Chữ hiển thị sắc nét, dịu mắt và dễ đọc với lớp phủ bảo vệ thị lực.</p>
+          </div>
+        </div>
+
+        <!-- Custom Upload or URL -->
+        <div class="form-group" style="margin-top: 14px;">
+          <label>Tải Lên Hình Nền Riêng Từ Máy Tính Hoặc Nhập URL</label>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <label for="bgImageFileInput" class="btn btn-secondary btn-sm" style="cursor: pointer;">
+              📁 Chọn ảnh từ máy tính (.jpg, .png, .webp)
+            </label>
+            <input type="file" id="bgImageFileInput" accept="image/*" style="display: none;">
+            <button type="button" class="btn btn-ghost btn-sm" id="resetBgToDefaultBtn" style="color: var(--accent-amber);">
+              ↺ Đặt lại nền mặc định
+            </button>
+          </div>
+          <div style="display: flex; gap: 8px; margin-top: 8px;">
+            <input type="url" id="bgImageUrlInput" placeholder="Hoặc dán liên kết ảnh trực tuyến (https://...)" style="flex: 1; font-size: 0.88rem;">
+            <button type="button" class="btn btn-secondary btn-sm" id="applyBgUrlBtn">Áp Dụng</button>
+          </div>
+        </div>
+
+        <!-- Preset Background Collection -->
+        <div class="form-group" style="margin-top: 10px;">
+          <label>Bộ Sưu Tập Hình Nền Văn Học & Nghệ Thuật Tuyển Chọn</label>
+          <div class="bg-presets-grid" id="bgPresetsGrid">
+            <!-- Injected by JS with curated presets -->
+          </div>
+        </div>
+
+        <!-- Visual Effects Sliders (Overlay Opacity & Blur) -->
+        <div class="form-row" style="margin-top: 8px;">
+          <div class="form-group">
+            <div style="display: flex; justify-content: space-between;">
+              <label for="bgOverlaySlider">Lớp phủ tối (Bảo vệ mắt đọc bài)</label>
+              <span id="bgOverlayValText" style="font-size: 0.82rem; color: var(--accent-cyan); font-weight: 700;">70%</span>
+            </div>
+            <input type="range" id="bgOverlaySlider" min="15" max="95" value="70" class="styled-range">
+          </div>
+          <div class="form-group">
+            <div style="display: flex; justify-content: space-between;">
+              <label for="bgBlurSlider">Độ nhòe hình nền (Tạo chiều sâu)</label>
+              <span id="bgBlurValText" style="font-size: 0.82rem; color: var(--accent-cyan); font-weight: 700;">3px</span>
+            </div>
+            <input type="range" id="bgBlurSlider" min="0" max="15" value="3" class="styled-range">
+          </div>
+        </div>
+
+        <!-- Admin Global Default Wallpaper Control (Chỉ hiển thị khi là Admin) -->
+        <div class="admin-bg-default-box" id="adminBgDefaultBox" style="display: none; margin-top: 14px; padding: 14px; background: rgba(245, 158, 11, 0.08); border: 1px dashed var(--accent-amber); border-radius: var(--radius-md);">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <div style="flex: 1; min-width: 240px;">
+              <span style="font-size: 0.82rem; font-weight: 700; color: var(--accent-amber); display: flex; align-items: center; gap: 5px;">
+                👑 Đặc Quyền Quản Trị Viên (Admin)
+              </span>
+              <p style="font-size: 0.78rem; color: var(--text-secondary); margin: 3px 0 0; line-height: 1.4;">
+                Đặt hình nền & độ mờ hiện tại thành <strong>Cài đặt mặc định cho toàn web</strong>. Học sinh và những người mới vào web sẽ tự động thấy cài đặt này.
+              </p>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" class="btn btn-secondary btn-sm" id="setAsSiteDefaultBgBtn" style="border-color: var(--accent-amber); color: var(--accent-amber); font-weight: 700;">
+                ⭐ Đặt Làm Mặc Định Toàn Web
+              </button>
+              <button type="button" class="btn btn-ghost btn-sm" id="exportDataJsConfigBtn" title="Tải file data.js đã cập nhật cấu hình mặc định mới" style="color: var(--accent-cyan); font-size: 0.8rem;">
+                💾 Tải data.js mới
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="margin-top: 14px;">
+          <button type="button" class="btn btn-primary" id="finishBgCustomizerBtn">Lưu & Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase Cloud Sync Configuration Modal (Cài Đặt Đám Mây Google Firebase) -->
+  <div class="modal-overlay" id="firebaseConfigModal">
+    <div class="modal-card" style="max-width: 620px;">
+      <div class="modal-header">
+        <h3>☁️ Cài Đặt Đám Mây Trực Tuyến (Google Firebase)</h3>
+        <button class="close-modal-btn" id="closeFirebaseConfigModalBtn">&times;</button>
+      </div>
+      <div class="modal-form">
+        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
+          Khi kết nối với <strong>Google Firebase Realtime Database (Hoàn toàn miễn phí)</strong>, mọi nội dung, bài học, bìa sách và âm thanh bạn chỉnh sửa sẽ <strong>tự động đồng bộ thời gian thực</strong> sang máy tính và điện thoại của tất cả học sinh!
+        </p>
+
+        <!-- Current Status Box -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: var(--radius-sm); margin-bottom: 14px;">
+          <div>
+            <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">Trạng thái kết nối hiện tại:</span>
+            <strong id="cloudModalStatusText" style="font-size: 0.92rem; color: var(--text-secondary);">Chưa kết nối đám mây (Dùng bộ nhớ cục bộ)</strong>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" id="testCloudSyncBtn">
+            🔄 Đồng bộ ngay
+          </button>
+        </div>
+
+        <!-- 3-Step Guide Card -->
+        <div class="cloud-config-guide-card">
+          <div class="cloud-config-step">
+            <span class="cloud-step-num">1</span>
+            <div>
+              <strong>Tạo dự án Firebase miễn phí</strong>:
+              Truy cập <a href="https://console.firebase.google.com/" target="_blank" rel="noopener" style="color: var(--accent-cyan); text-decoration: underline;">console.firebase.google.com</a> (đăng nhập bằng tài khoản Google của bạn) và bấm <em>Add project</em>.
+            </div>
+          </div>
+          <div class="cloud-config-step">
+            <span class="cloud-step-num">2</span>
+            <div>
+              <strong>Bật Realtime Database</strong>:
+              Vào menu bên trái chọn <em>Build -> Realtime Database -> Create Database</em>, chọn vị trí (Singapore/US) và chọn tab Rules đặt <code>".read": true, ".write": true</code> (Test mode).
+            </div>
+          </div>
+          <div class="cloud-config-step" style="margin-bottom: 0;">
+            <span class="cloud-step-num">3</span>
+            <div>
+              <strong>Lấy cấu hình Web App</strong>:
+              Bấm biểu tượng bánh răng ⚙️ <em>Project Settings -> General -> Your apps</em>, bấm biểu tượng web <code>&lt;/&gt;</code>, copy toàn bộ đoạn mã <code>firebaseConfig = { ... }</code> rồi dán vào ô bên dưới:
+            </div>
+          </div>
+        </div>
+
+        <!-- Config Textarea -->
+        <div class="form-group">
+          <label for="firebaseConfigInput">Dán đoạn mã cấu hình Firebase (JSON hoặc Object)</label>
+          <textarea id="firebaseConfigInput" rows="5" placeholder='const firebaseConfig = {&#10;  apiKey: "AIzaSy...",&#10;  authDomain: "...",&#10;  databaseURL: "https://...-default-rtdb.firebaseio.com",&#10;  projectId: "..."&#10;};' style="font-family: monospace; font-size: 0.8rem;"></textarea>
+        </div>
+
+        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px;">
+          <button type="button" class="btn btn-ghost btn-sm" id="disconnectCloudBtn" style="color: var(--accent-rose);">
+            ✕ Ngắt kết nối
+          </button>
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn btn-secondary" id="cancelFirebaseConfigBtn">Đóng</button>
+            <button type="button" class="btn btn-primary" id="saveFirebaseConfigBtn">🚀 Lưu & Bật Đám Mây</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Toast Notification -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Floating Scroll Controls (Thanh lướt trang thông minh Lên / Xuống) -->
+  <div class="page-scroll-controls" id="pageScrollControls">
+    <button class="page-scroll-btn scroll-top-btn" id="backToTopBtn" title="Lướt nhanh lên đầu trang (Phím Home)" aria-label="Lướt lên đầu trang">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+      <span class="scroll-tooltip">Lên đầu trang</span>
+    </button>
+    <button class="page-scroll-btn scroll-down-btn" id="scrollToContentBtn" title="Lướt xuống danh sách tác phẩm" aria-label="Lướt xuống nội dung">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+      <span class="scroll-tooltip">Xuống bài học</span>
+    </button>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div class="footer-left">
+        <div class="logo-text">VănHọc<span class="logo-accent">12</span></div>
+        <p class="footer-tagline">Hệ thống ôn luyện Ngữ Văn Lớp 12 & Luyện thi THPT Quốc Gia toàn diện. Chắp cánh ước mơ giảng đường.</p>
+      </div>
+      <div class="footer-right">
+        <p>© 2026 VănHọc12 Pro. Chế độ Quản Trị Độc Quyền & Toàn Văn SGK.</p>
+        <div class="footer-links">
+          <span>Toàn Văn Bài Học</span>
+          <span>•</span>
+          <span>Dàn Ý 9+</span>
+          <span>•</span>
+          <span>Admin Access Control</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Google Firebase SDKs (Compat CDN v9.23.0) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
